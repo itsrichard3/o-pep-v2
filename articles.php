@@ -17,6 +17,12 @@
     <body>
 
     <input class="search" type="text" placeholder="Search for article">
+
+    <button id="ADDARTICLE">ADD NEW ARTICLE</button>
+
+
+
+
         <div class="HERO w-100 px-0 mx-0 d-flex">
             <div class="left w-75 bg-danger ">
 
@@ -201,6 +207,10 @@
 
 
                 console.log(checked);
+
+                var ADD =document.querySelector('#ADDARTICLE').addEventListener('click', function() {
+                    window.open('ADD_ARTICLE.php?theme=<?php echo $idtheme?>');
+                })
 
             </script>
     </body>

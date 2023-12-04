@@ -15,7 +15,6 @@ if(isset($_GET['themesearch'])){
         <?php
 }
 }
-
 ?>
 
 
