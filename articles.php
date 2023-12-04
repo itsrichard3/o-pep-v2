@@ -108,9 +108,19 @@
            <script>
 
 
+
+
                 var input =document.querySelector('.search');
-                var articleID =document.querySelectorAll('.card');
+                var article =document.querySelectorAll('.card');
                 var pagebutton =document.querySelectorAll('.page');
+
+
+                article.forEach(element => {
+                    element.addEventListener('click' , function () {
+                            let cardvalue = this.getAttribute('data-key');
+                            window.open('ARTICLE_PAGE.php?articleid='+cardvalue);
+                    })
+                })
 
 
                 
@@ -127,6 +137,7 @@
                             XML.open('GET','AFFICHAGE.php?themesearch=<?php echo $idtheme?>');
                             XML.send();
                 }
+
 
 
 
@@ -154,6 +165,8 @@
 
                 var checkbox =document.querySelectorAll('.BOX');
                 var checked = [];
+
+
                 checkbox.forEach(check => {
                     check.addEventListener('change' , function () {
                         if(this.checked){
@@ -204,6 +217,8 @@
                         HTTP.send("page="+pagevalue + '&theme=' + <?php echo $idtheme?>);
                     })
                 })
+
+
 
 
                 console.log(checked);
