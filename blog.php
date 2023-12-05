@@ -7,7 +7,8 @@ if(!isset($_SESSION["user_id"])) {
 elseif(isset($_SESSION["user_id"])){
     $userid = $_SESSION["user_id"];
     echo $userid;
-} 
+}
+
 
 ?>
 
