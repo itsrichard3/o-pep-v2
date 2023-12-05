@@ -205,7 +205,6 @@
                     })
                 })
 
-
                 console.log(checked);
 
                 var ADD =document.querySelector('#ADDARTICLE').addEventListener('click', function() {
