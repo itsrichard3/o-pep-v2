@@ -3,14 +3,12 @@ include_once("./app/config/db.php");
 session_start();
 if(isset($_SESSION["user_id"])){
 $user_id = $_SESSION["user_id"];
-echo "".$user_id."<br>";
 }
 else{
     header('location: index.php');
 }
 if(isset($_GET["articleid"])) {
     $articleID = $_GET["articleid"];
-    echo $articleID;
 }
 
 ?>
@@ -26,8 +24,8 @@ if(isset($_GET["articleid"])) {
 </head>
 <body>
     <?php
-    $selection = $con->prepare("SELECT * FROM article,users WHERE  article.article_id = ?");
-    $selection->bind_param('i',$articleID);
+    $selection = $con->prepare("SELECT * FROM article,users WHERE  article.article_id = ? AND  users.user_id = ?");
+    $selection->bind_param('ii',$articleID,$user_id);
     $selection->execute();
     $result = $selection->get_result();
     if($result->num_rows > 0) {
@@ -38,7 +36,7 @@ if(isset($_GET["articleid"])) {
        <?php
        if($row['article_user'] == $user_id || $row['role_id'] == 2){
         ?>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Modify</button>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#<?=$row['article_title']?>">Modify</button>
         <?php
        }
        ?>
@@ -46,7 +44,7 @@ if(isset($_GET["articleid"])) {
 
 
         <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="<?=$row['article_title']?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -82,35 +80,53 @@ if(isset($_GET["articleid"])) {
             <button id="ADDCOMMENT">COMMENT</button>
             </div>
        <div class="comments">
-         <?php
 
-            $comment = $con->prepare('SELECT * FROM comments WHERE  article_id = ?');
+         <!-- HERE CONTENT -->
+
+
+         <?php 
+        if(!isset($_GET['ARTICLE_ID'])) {
+            $comment = $con->prepare('SELECT * FROM comments WHERE  article_id = ? AND comment_status = "COMMENTED"');
             $comment->bind_param('i',$articleID);
             $comment->execute();
             $resultcomments = $comment->get_result();
-            while($row = $resultcomments->fetch_assoc()) {
-                $users = $con->prepare("SELECT * FROM users WHERE user_id = ?");
-                $users->bind_param('i',$user_id);
-                $users->execute();
-                $resultuser = $users->get_result();
-                $rowuser = $resultuser->fetch_assoc();
-                if($row['user_id'] == $user_id|| $rowuser['role_id']==2 ){
+            while ($row = $resultcomments->fetch_assoc()) {
+                $commentID = $row['comment_id'];
+            
+                $selected = $con->prepare("SELECT *
+                    FROM comments
+                    JOIN users ON comments.user_id = users.user_id
+                    WHERE comments.comment_id = ?");
+                $selected->bind_param('i', $commentID);
+                $selected->execute();
+                $resultselected = $selected->get_result();
+                $rowselected = $resultselected->fetch_assoc();
+            
+                if ($rowselected) {
                     ?>
                     <div>
-                        <p><?php echo $row['comment_text']?></p>
-                        <button>MODIFY</button>
-                        <button>DELETE</button>
+                        <h1><?php echo $rowselected['user_name']?></h1>
+                        <p><?php echo $rowselected['comment_text']?></p>
+                        <?php
+                        if ($row['user_id'] == $user_id || $rowselected['role_id'] == 2) {
+                            ?>
+                            <button>MODIFY</button>
+                            <button onclick="DELETE()" value="<?php echo $row['comment_id']?>" name="DELETE" class="DELETE">DELETE</button>
+                            <?php
+                        }
+                        ?>
                     </div>
                     <?php
-                }
-                else {
+                } else {
                     ?>
                     <p><?php echo $row['comment_text']?></p>
                     <?php
                 }
             }
-        
-        ?>
+            
+        }
+         ?>
+
        </div>
 
 
@@ -119,12 +135,15 @@ if(isset($_GET["articleid"])) {
 
     
     ?>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <script>
         var sendcomment =document.querySelector('#ADDCOMMENT');
         var inputcomment = document.querySelector('#COMMENT');
-        // var placecomment =document.querySelector('.comments');
+        var placecomment =document.querySelector('.comments');
 
+
+        // BOTTON SEND COMMENTS
         sendcomment.addEventListener('click' ,function () {
             let commentvalue = inputcomment.value;
             
@@ -132,13 +151,82 @@ if(isset($_GET["articleid"])) {
 
             XML.onreadystatechange =function () {
              if(this.status == 200) {
-                console.log("SUCCEFULLY ADDED");
+                fetchUpdatedComments();
+                commentvalue = '';
              }
             }
 
-            XML.open('GET','comment.php?COMMENTUSER=<?php echo $user_id?>' + '&ARTICLE_ID=<?php echo $articleID?>' + '&COMMENTCVALUE='+commentvalue)
-            XML.send();
+            XML.open('POST', 'comment.php');
+    XML.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    XML.send(
+        'COMMENTUSER=<?php echo $user_id?>&ARTICLE_ID=<?php echo $articleID?>&COMMENTVALUE=' + commentvalue
+    );
         } )
+
+
+            // fetching DATAA FROM COMMENTS
+        function fetchUpdatedComments() {
+        let commentFetch = new XMLHttpRequest();
+
+        commentFetch.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                placecomment.innerHTML = this.responseText; 
+            }
+        }
+
+        
+        commentFetch.open('GET', 'fetchcomments.php?ARTICLE_ID=<?php echo $articleID?>' + '&user=<?php echo $user_id?>');
+        commentFetch.send();
+    }
+
+
+
+    // DELETING COMMENTS
+            function DELETE() {
+                var DELETE =document.querySelectorAll('.DELETE');
+        DELETE.forEach(btn => {
+                            btn.addEventListener('click' , function() {
+                                let deletevalue = this.value;
+                                Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!"
+                }).then((result) => {
+                if (result.isConfirmed) {
+                    let XML = new XMLHttpRequest();
+                    XML.onreadystatechange=function() {
+                        if(this.status==200) {
+                            
+                            fetchUpdatedComments();
+                            Swal.fire({
+                    title: "Deleted!",
+                    text: "Your file has been deleted.",
+                    icon: "success"
+                    });
+                        }
+                    }
+                    
+
+                    XML.open('GET','delete_comment.php?DELETEID='+deletevalue);
+                    XML.send();
+                    
+                }
+                });
+            })
+        })
+        
+            }
+    
+
+
+
+   
+
+
     </script>
 </body>
 </html>

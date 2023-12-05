@@ -118,7 +118,7 @@
                 article.forEach(element => {
                     element.addEventListener('click' , function () {
                             let cardvalue = this.getAttribute('data-key');
-                            window.open('ARTICLE_PAGE.php?articleid='+cardvalue);
+                            window.open('ARTICLE_PAGE.php?articleid='+cardvalue)
                     })
                 })
 
