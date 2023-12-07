@@ -8,5 +8,4 @@ if(isset($_GET["CMTID"]) && isset($_GET["CMTVALUE"])) {
     $check->bind_param("si",$commentvalue ,$commentid);
     $check->execute();
 }
-
 ?>
