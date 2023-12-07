@@ -14,21 +14,15 @@ if(isset($_GET["articleid"])) {
 ?>
 
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <link rel="stylesheet" href="./assets/css/ratings.css">
     <title>Document</title>
 </head>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://use.fontawesome.com/fe459689b4.js"></script>
-
 <body>
-
     <?php
     $selection = $con->prepare("SELECT * FROM article,users WHERE  article.article_id = ? AND  users.user_id = ?");
     $selection->bind_param('ii',$articleID,$user_id);
@@ -37,54 +31,20 @@ if(isset($_GET["articleid"])) {
     if($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         ?>
-        <div class="d-flex">
+        <div clas="d-flex">
         <H1 class="text-center"><?php echo $row['article_title']?></h1>
        <?php
        if($row['article_user'] == $user_id || $row['role_id'] == 2){
         ?>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#hehe">Modify</button>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#<?=$row['article_title']?>">Modify</button>
         <?php
        }
        ?>
         </div>
 
 
-        <?php
-        $articles = mysqli_query($con, "SELECT * FROM article WHERE article_id = '$articleID'");
-        $articles_rows = mysqli_fetch_assoc($articles);
-        
-        foreach ($articles as $article):
-            $article_id = $articleID;
-            $likes_count = mysqli_fetch_assoc(mysqli_query($con,
-                "SELECT COUNT(*) AS likes FROM ratings WHERE article_id = $article_id AND status = 'like'"))['likes'];
-            $dislikes_count = mysqli_fetch_assoc(mysqli_query($con,
-                "SELECT COUNT(*) AS dislikes FROM ratings WHERE article_id = $article_id AND status = 'dislike'"))['dislikes'];
-            $status = mysqli_query($con, "SELECT status FROM ratings WHERE article_id = $article_id AND user_id = $user_id ");
-            if (mysqli_num_rows($status) > 0) {
-                $status = mysqli_fetch_assoc($status)['status'];
-            } else {
-                $status = 0;
-            }
-            ?>
-
-
-            <form action="./ratings.php" method="post">
-               <input type="hidden" name="articleID" value="<?php echo $articleID; ?>">
-               <button name="like" value="1" class="like <?php if($status == 'like') echo "selected"; ?>" data-article-id = <?php echo $article_id ?> >
-                   <i class="fa fa-thumbs-up"></i>
-                   <span class="like_count <?php $article_id; ?> data_count = <?php echo $likes_count;  ?>"> <?php echo $likes_count; ?></span>
-               </button>
-            </form>
-            <form action="./test.php" method="post">
-                <input type="hidden" name="articleID" value="<?php echo $articleID; ?>"  >
-                <button name="like" value="0" class="dislike <?php if($status == 'dislike') echo "selected"; ?>" data-article-id = <?php echo $article_id ?> >
-                    <i class="fa fa-thumbs-down"></i>
-                    <span class="dislike_count <?php $article_id; ?> data_count = <?php echo $dislikes_count;  ?>"> <?php echo $dislikes_count; ?></span>
-                </button>
-            </form>
-<?php endforeach; ?>
         <!-- Modal -->
-<div class="modal fade" id="hehe" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="<?=$row['article_title']?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -150,29 +110,8 @@ if(isset($_GET["articleid"])) {
                         <?php
                         if ($row['user_id'] == $user_id || $rowselected['role_id'] == 2) {
                             ?>
-                            <button class="MODIFY btn btn-primary" data-bs-toggle="modal" data-bs-target="#<?php echo $row['comment_text']?>" >MODIFY</button>
-                            <button onclick="DELETE(<?php echo $row['comment_id']?>)" value="<?php echo $row['comment_id']?>" name="DELETE" class="DELETE">DELETE</button>
-                            
-                            <!-- Modal -->
-<div class="modalmodifycomment modal fade" id="<?php echo $row['comment_text']?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">COMMENT ID : <?php echo $row['comment_id']?></h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <input type="text" placecomment="new comment ..." class="modifycomment" value="<?php echo $row['comment_text']?>">
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="SAVE btn btn-primary" value="<?php echo $row['comment_id']?>" data-bs-dismiss="modal">Save changes</button>
-      </div>
-    </div>
-  </div>
-</div>
-                            
-                            
+                            <button>MODIFY</button>
+                            <button onclick="DELETE()" value="<?php echo $row['comment_id']?>" name="DELETE" class="DELETE">DELETE</button>
                             <?php
                         }
                         ?>
@@ -180,27 +119,22 @@ if(isset($_GET["articleid"])) {
                     <?php
                 } else {
                     ?>
-                    <h1><?php echo $rowselected['user_name']?></h1>
                     <p><?php echo $row['comment_text']?></p>
                     <?php
                 }
             }
             
         }
-   
-
          ?>
 
        </div>
 
 
         <?php
-    
- }
+    }
+
     
     ?>
-   
-    
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <script>
@@ -248,7 +182,11 @@ if(isset($_GET["articleid"])) {
 
 
     // DELETING COMMENTS
-            function DELETE(id) {
+            function DELETE() {
+                var DELETE =document.querySelectorAll('.DELETE');
+        DELETE.forEach(btn => {
+                            btn.addEventListener('click' , function() {
+                                let deletevalue = this.value;
                                 Swal.fire({
                 title: "Are you sure?",
                 text: "You won't be able to revert this!",
@@ -273,39 +211,18 @@ if(isset($_GET["articleid"])) {
                     }
                     
 
-                    XML.open('GET','delete_comment.php?DELETEID='+id);
+                    XML.open('GET','delete_comment.php?DELETEID='+deletevalue);
                     XML.send();
                     
                 }
                 });
+            })
+        })
         
             }
+    
 
 
-
-
-            // modify comment 
-            var COMMENTMODIFY =document.querySelectorAll('.modifycomment');
-            var SAVE =document.querySelectorAll('.SAVE');
-
-
-            SAVE.forEach((btn,i) => {
-                btn.addEventListener('click' , function () {
-                    let valuesave =COMMENTMODIFY[i].value;
-                    let btnvalue = btn.value;
-                    let XML = new XMLHttpRequest();
-                    XML.onreadystatechange = function () {
-                        if(this.status==200) {
-                            fetchUpdatedComments();
-                        }
-                    }
-                    XML.open('GET','MODIFY.php?CMTID='+btnvalue + '&CMTVALUE='+valuesave);
-                    XML.send();
-
-                })
-            })
-
-            
 
    
 
