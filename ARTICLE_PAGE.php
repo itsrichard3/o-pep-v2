@@ -42,7 +42,7 @@ if(isset($_GET["articleid"])) {
        <?php
        if($row['article_user'] == $user_id || $row['role_id'] == 2){
         ?>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#<?=$row['article_title']?>">Modify</button>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#hehe">Modify</button>
         <?php
        }
        ?>
@@ -84,7 +84,7 @@ if(isset($_GET["articleid"])) {
             </form>
 <?php endforeach; ?>
         <!-- Modal -->
-<div class="modal fade" id="<?=$row['article_title']?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="hehe" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -150,8 +150,29 @@ if(isset($_GET["articleid"])) {
                         <?php
                         if ($row['user_id'] == $user_id || $rowselected['role_id'] == 2) {
                             ?>
-                            <button>MODIFY</button>
-                            <button onclick="DELETE()" value="<?php echo $row['comment_id']?>" name="DELETE" class="DELETE">DELETE</button>
+                            <button class="MODIFY btn btn-primary" data-bs-toggle="modal" data-bs-target="#<?php echo $row['comment_text']?>" >MODIFY</button>
+                            <button onclick="DELETE(<?php echo $row['comment_id']?>)" value="<?php echo $row['comment_id']?>" name="DELETE" class="DELETE">DELETE</button>
+                            
+                            <!-- Modal -->
+<div class="modalmodifycomment modal fade" id="<?php echo $row['comment_text']?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">COMMENT ID : <?php echo $row['comment_id']?></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <input type="text" placecomment="new comment ..." class="modifycomment" value="<?php echo $row['comment_text']?>">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="SAVE btn btn-primary" value="<?php echo $row['comment_id']?>" data-bs-dismiss="modal">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+                            
+                            
                             <?php
                         }
                         ?>
@@ -159,6 +180,7 @@ if(isset($_GET["articleid"])) {
                     <?php
                 } else {
                     ?>
+                    <h1><?php echo $rowselected['user_name']?></h1>
                     <p><?php echo $row['comment_text']?></p>
                     <?php
                 }
@@ -226,11 +248,7 @@ if(isset($_GET["articleid"])) {
 
 
     // DELETING COMMENTS
-            function DELETE() {
-                var DELETE =document.querySelectorAll('.DELETE');
-        DELETE.forEach(btn => {
-                            btn.addEventListener('click' , function() {
-                                let deletevalue = this.value;
+            function DELETE(id) {
                                 Swal.fire({
                 title: "Are you sure?",
                 text: "You won't be able to revert this!",
@@ -255,18 +273,39 @@ if(isset($_GET["articleid"])) {
                     }
                     
 
-                    XML.open('GET','delete_comment.php?DELETEID='+deletevalue);
+                    XML.open('GET','delete_comment.php?DELETEID='+id);
                     XML.send();
                     
                 }
                 });
-            })
-        })
         
             }
-    
 
 
+
+
+            // modify comment 
+            var COMMENTMODIFY =document.querySelectorAll('.modifycomment');
+            var SAVE =document.querySelectorAll('.SAVE');
+
+
+            SAVE.forEach((btn,i) => {
+                btn.addEventListener('click' , function () {
+                    let valuesave =COMMENTMODIFY[i].value;
+                    let btnvalue = btn.value;
+                    let XML = new XMLHttpRequest();
+                    XML.onreadystatechange = function () {
+                        if(this.status==200) {
+                            fetchUpdatedComments();
+                        }
+                    }
+                    XML.open('GET','MODIFY.php?CMTID='+btnvalue + '&CMTVALUE='+valuesave);
+                    XML.send();
+
+                })
+            })
+
+            
 
    
 

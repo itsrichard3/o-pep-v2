@@ -90,7 +90,7 @@
                 ?>
                 <div class="pagination d-flex justify-content-center">
                     <?php
-                    for($i=0+1;$i<=$totalpage;$i++){
+                    for($i=1;$i<=$totalpage;$i++){
                         ?>
                         <button class="page" value="<?php echo $i?>"><?php echo $i?></button>
                         <?php
@@ -170,7 +170,7 @@
                 checkbox.forEach(check => {
                     check.addEventListener('change' , function () {
                         if(this.checked){
-                        checked.push(this.value);
+                        checked.push(this.value);   
                         }
                         else{
                             let index = checked.indexOf(this.value);
