@@ -1,8 +1,8 @@
 <?php
 include_once("./app/config/db.php");
 if(isset($_POST['page']) && isset($_POST['theme'])) {
-    $page = $_POST['page'];
-    $theme = $_POST['theme'];
+    $page = $_POST['page']; // page 1
+    $theme = $_POST['theme']; // theme 1
 
     $pagination = ($page - 1) *10;
     

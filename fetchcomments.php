@@ -28,8 +28,8 @@ if(isset($_GET['ARTICLE_ID'])) {
                 <?php
                 if ($row['user_id'] == $user_id || $rowselected['role_id'] == 2) {
                     ?>
-                    <button>MODIFY</button>
-                    <button onclick="DELETE()" value="<?php echo $row['comment_id']?>" name="DELETE" class="DELETE">DELETE</button>
+                    <button class="MODIFY btn btn-primary" data-bs-toggle="modal" data-bs-target="#<?php echo $row['comment_text']?>">MODIFY</button>
+                    <button onclick="DELETE(<?php echo $row['comment_id']?>)" value="<?php echo $row['comment_id']?>" name="DELETE" class="DELETE">DELETE</button>
                     <?php
                 }
                 ?>
@@ -41,6 +41,29 @@ if(isset($_GET['ARTICLE_ID'])) {
             <p><?php echo $row['comment_text']?></p>
             <?php
         }
+
+
+
+        ?>
+        <div class="modal fade" id="<?php echo $row['comment_text']?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">COMMENT ID : <?php echo $row['comment_id']?></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <input type="text" placecomment="new comment ..." class="modifycomment" value="<?php echo $row['comment_text']?>">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="SAVE btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+        
+        <?php
     }
     
 }
