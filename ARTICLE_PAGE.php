@@ -10,7 +10,9 @@ else{
 if(isset($_GET["articleid"])) {
     $articleID = $_GET["articleid"];
 }
-
+$uniqueID = bin2hex(random_bytes(8));
+$uniqueID = preg_replace("/[^A-Za-z]/", '', $uniqueID);
+echo $uniqueID;
 ?>
 
 
@@ -36,15 +38,16 @@ if(isset($_GET["articleid"])) {
        <?php
        if($row['article_user'] == $user_id || $row['role_id'] == 2){
         ?>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#<?=$row['article_title']?>">Modify</button>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#<?php echo $uniqueID?>">Modify</button>
+        <button type="button" class="btn btn-danger" value="<?php echo $row['article_id']?>">DELETE ARTICLE</button>
         <?php
        }
        ?>
         </div>
 
 
-        <!-- Modal -->
-<div class="modal fade" id="<?=$row['article_title']?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<!-- Modal -->
+<div class="modal fade" id="<?php echo $uniqueID?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -52,21 +55,31 @@ if(isset($_GET["articleid"])) {
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        ...
+        <label for="article_title">article_title</label>
+        <input type="text" class="w-100 article_title" value="<?php echo $row['article_title']?>">
+        <label for="textarea" class="mt-1">article_text</label>
+        <textarea class="form-control mt-2 message-text"><?php echo $row['article_text']?></textarea>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" name="article_image" class="form-control article_image">
+        </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <button type="button" class="SAVEARTICLE btn btn-primary" value="<?php echo $row['article_id']?>">Save changes</button>
       </div>
     </div>
   </div>
 </div>
 
 
+<?php
+$imageData = base64_encode($row['article_img']);
+$imageSrc = 'data:image/jpeg;base64,' . $imageData;
+?>
 
         <div>
             <div class="w-25">
-                <img src="./assets/imgs/<?php echo $row['article_img']?>" alt="">
+                <img src="<?php echo $imageSrc; ?>" alt="">
             </div>
             <div>
                 <p><?php echo $row['article_text']?></p>
@@ -90,6 +103,7 @@ if(isset($_GET["articleid"])) {
             $comment->bind_param('i',$articleID);
             $comment->execute();
             $resultcomments = $comment->get_result();
+            $n = 0;
             while ($row = $resultcomments->fetch_assoc()) {
                 $commentID = $row['comment_id'];
             
@@ -107,18 +121,42 @@ if(isset($_GET["articleid"])) {
                     <div>
                         <h1><?php echo $rowselected['user_name']?></h1>
                         <p><?php echo $rowselected['comment_text']?></p>
+                        <p class="hehe"></p>
                         <?php
                         if ($row['user_id'] == $user_id || $rowselected['role_id'] == 2) {
                             ?>
-                            <button>MODIFY</button>
-                            <button onclick="DELETE()" value="<?php echo $row['comment_id']?>" name="DELETE" class="DELETE">DELETE</button>
+                            <button  class="MODIFY btn btn-primary" data-bs-toggle="modal" data-bs-target="#<?php echo $row['comment_text']?>" >MODIFY</button>
+                            <button onclick="DELETE(<?php echo $row['comment_id']?>)" value="<?php echo $row['comment_id']?>" name="DELETE" class="DELETE">DELETE</button>
+                            
+                            <!-- Modal -->
+<div class="modalmodifycomment modal fade" id="<?php echo $row['comment_text']?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">COMMENT ID : <?php echo $row['comment_id']?></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <input type="text" placecomment="new comment ..." class="modifycomment" value="<?php echo $row['comment_text']?>">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button onclick="modify(this,<?php echo $n?>)" type="button" class="SAVE btn btn-primary" value="<?php echo $row['comment_id']?>" data-bs-dismiss="modal">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+                            
+                            
                             <?php
+                            $n++;
                         }
                         ?>
                     </div>
                     <?php
                 } else {
                     ?>
+                    <h1><?php echo $rowselected['user_name']?></h1>
                     <p><?php echo $row['comment_text']?></p>
                     <?php
                 }
@@ -143,6 +181,23 @@ if(isset($_GET["articleid"])) {
         var placecomment =document.querySelector('.comments');
 
 
+        
+            // fetching DATAA FROM COMMENTS
+            function fetchUpdatedComments() {
+        let commentFetch = new XMLHttpRequest();
+
+        commentFetch.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                placecomment.innerHTML = this.responseText; 
+            }
+        }
+
+        
+        commentFetch.open('GET', 'fetchcomments.php?ARTICLE_ID=<?php echo $articleID?>' + '&user=<?php echo $user_id?>');
+        commentFetch.send();
+    }
+
+
         // BOTTON SEND COMMENTS
         sendcomment.addEventListener('click' ,function () {
             let commentvalue = inputcomment.value;
@@ -164,29 +219,11 @@ if(isset($_GET["articleid"])) {
         } )
 
 
-            // fetching DATAA FROM COMMENTS
-        function fetchUpdatedComments() {
-        let commentFetch = new XMLHttpRequest();
-
-        commentFetch.onreadystatechange = function () {
-            if (this.readyState == 4 && this.status == 200) {
-                placecomment.innerHTML = this.responseText; 
-            }
-        }
-
-        
-        commentFetch.open('GET', 'fetchcomments.php?ARTICLE_ID=<?php echo $articleID?>' + '&user=<?php echo $user_id?>');
-        commentFetch.send();
-    }
 
 
 
     // DELETING COMMENTS
-            function DELETE() {
-                var DELETE =document.querySelectorAll('.DELETE');
-        DELETE.forEach(btn => {
-                            btn.addEventListener('click' , function() {
-                                let deletevalue = this.value;
+            function DELETE(id) {
                                 Swal.fire({
                 title: "Are you sure?",
                 text: "You won't be able to revert this!",
@@ -211,20 +248,71 @@ if(isset($_GET["articleid"])) {
                     }
                     
 
-                    XML.open('GET','delete_comment.php?DELETEID='+deletevalue);
+                    XML.open('GET','delete_comment.php?DELETEID='+id);
                     XML.send();
                     
                 }
                 });
-            })
-        })
         
             }
-    
 
 
 
-   
+
+            // modify comment 
+            var COMMENTMODIFY =document.querySelectorAll('.modifycomment');
+            var SAVE =document.querySelectorAll('.SAVE');
+
+
+                    function modify (btn,i) {
+                        let valuesave =COMMENTMODIFY[i].value;
+                    let btnvalue = btn.value;
+                    console.log(valuesave);
+                    console.log(btnvalue);
+                    let XML = new XMLHttpRequest();
+                    XML.onreadystatechange = function () {
+                        if(this.status==200) {
+                            fetchUpdatedComments();
+                        }
+                    }
+                    XML.open('GET','MODIFY.php?CMTID='+btnvalue + '&CMTVALUE='+valuesave);
+                    XML.send();
+                    }
+            
+
+
+                        var save = document.querySelectorAll('.SAVEARTICLE');
+            var articletitle = document.querySelectorAll('.article_title');
+            var messagetext = document.querySelectorAll('.message-text');
+            var articleimage = document.querySelectorAll('.article_image');
+
+            save.forEach((btn, index) => {
+                btn.addEventListener('click', function () {
+                    let message = messagetext[index].value;
+                    let articletitletest = articletitle[index].value;
+                    let articleImageFile = articleimage[index].files[0];
+
+                    let savebtn = btn.value;
+
+                    let formData = new FormData(); 
+                    formData.append('articleid', savebtn);
+                    formData.append('articletitle', articletitletest);
+                    formData.append('articlemessage', message);
+                    formData.append('articleimg', articleImageFile); 
+
+                    let XML = new XMLHttpRequest();
+
+                    XML.onreadystatechange = function () {
+                        if (this.status == 200) {
+                            console.log("Successfully updated!");
+                            location.reload();
+                        }
+                    }
+
+                    XML.open('POST', 'modifyarticle.php');
+                    XML.send(formData); 
+                })
+            })
 
 
     </script>

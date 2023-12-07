@@ -35,7 +35,7 @@
                 while($row = $result->fetch_assoc()) {
                     $articleID = $row['article_id'];
                     ?>
-                    <div class="card h-auto col-sm px-0 mx-0" data-key="<?php echo $articleID?>">
+                    <div onclick="attachClickListeners(<?php echo $articleID?>)" class="card h-auto col-sm px-0 mx-0" data-key="<?php echo $articleID?>">
                         <h1><?php echo $row['article_title']?></h1>
                         <h3><?php echo $row['article_text']?></h3>
                     </div>
@@ -90,7 +90,7 @@
                 ?>
                 <div class="pagination d-flex justify-content-center">
                     <?php
-                    for($i=0+1;$i<=$totalpage;$i++){
+                    for($i=1;$i<=$totalpage;$i++){
                         ?>
                         <button class="page" value="<?php echo $i?>"><?php echo $i?></button>
                         <?php
@@ -115,13 +115,21 @@
                 var pagebutton =document.querySelectorAll('.page');
 
 
-                article.forEach(element => {
-                    element.addEventListener('click' , function () {
-                            let cardvalue = this.getAttribute('data-key');
-                            window.open('ARTICLE_PAGE.php?articleid='+cardvalue)
-                    })
-                })
+                // article.forEach(element => {
+                //     element.addEventListener('click' , function () {
+                //             let cardvalue = this.getAttribute('data-key');
+                //             window.open('ARTICLE_PAGE.php?articleid='+cardvalue)
+                //     })
+                // });
 
+                function attachClickListeners(cardValue) {
+            console.log(cardValue);
+             if (cardValue) {
+                 window.location.href = `ARTICLE_PAGE.php?articleid=${cardValue}`;
+             } else {
+                 console.error("No data-key attribute found on clicked card.");
+             }
+}
 
                 
 
@@ -170,7 +178,7 @@
                 checkbox.forEach(check => {
                     check.addEventListener('change' , function () {
                         if(this.checked){
-                        checked.push(this.value);
+                        checked.push(this.value);  
                         }
                         else{
                             let index = checked.indexOf(this.value);
