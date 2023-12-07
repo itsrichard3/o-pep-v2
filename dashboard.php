@@ -1,8 +1,8 @@
 <?php
-// session_start();
-// if(isset($_SESSION["logged"]) && $_SESSION["logged"] && isset($_SESSION["role_id"]) && $_SESSION["role_id"] == 1) {
-//   header("Location:home.php");
-// }
+session_start();
+if(isset($_SESSION["logged"]) && $_SESSION["logged"] && isset($_SESSION["role_id"]) && $_SESSION["role_id"] == 1) {
+  header("Location:home.php");
+}
 require_once('./app/config/db.php');
 require_once("./app/funcs/category.php");
 require_once('./app/funcs/plant.php');
