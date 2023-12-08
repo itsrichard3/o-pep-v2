@@ -2,7 +2,6 @@
     include_once('./app/config/db.php');
     if(isset($_GET['theme'])) {
         $idtheme = $_GET['theme'];
-        echo $idtheme;
 }
     ?>
 
@@ -12,19 +11,27 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Bootstrap demo</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     </head>
     <body>
 
-    <input class="search" type="text" placeholder="Search for article">
+    <div class="flex flex-col gap-7 items-end">
+   <div class="relative  mx-auto w-6/12 border border-green-800 rounded-xl overflow-hidden ">
+    <input class="search w-full rounded-xl h-10 pl-10 pr-4 bg-slate-600 text-black text-xl " type="text" placeholder="Search for article">
+    <svg class="absolute w-10 h-10 pt-5 text-gray-500 dark:text-gray-400 top-2 right-3 transition-transform duration-300 ease-in-out transform -translate-y-1/2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+    </svg>
+</div>
 
-    <button id="ADDARTICLE">ADD NEW ARTICLE</button>
+<button id="ADDARTICLE" class=" w-44 h-10 text-green-600 font-mono mr-5 rounded-xl border border-green-600 hover:bg-green-300 hover:text-white ">Add New Article</button>
+ </div>
 
 
 
 
-        <div class="HERO w-100 px-0 mx-0 d-flex">
-            <div class="left w-75 bg-danger ">
+        <div class="HERO  flex mt-5 space-x-10">
+      
+            <div class="left  grid  grid-cols-3 gap-4 place-content-center ">
 
             <!-- content here -->
             <?php 
@@ -35,9 +42,12 @@
                 while($row = $result->fetch_assoc()) {
                     $articleID = $row['article_id'];
                     ?>
-                    <div class="card h-auto col-sm px-0 mx-0" data-key="<?php echo $articleID?>">
-                        <h1><?php echo $row['article_title']?></h1>
-                        <h3><?php echo $row['article_text']?></h3>
+                    <div onclick="attachClickListeners(<?php echo $articleID?>)" class="card card h-96 ml-7 border border-green-500 rounded-xl transition-transform duration-300 ease-in-out transform hover:scale-110 hover:shadow-2xl mr-4" data-key="<?php echo $articleID?>">
+                    <div class="ml-5 mr-5 mt-5 mb-5">
+                        <h1 class="text-2xl text-center font-semibold mb-3 "><?php echo $row['article_title']?></h1>
+                        <img class=" h-56 w-56 mb-5" src="<?php echo  $row['article_img'] ?>" alt="">
+                        <h3 class=" font-sans"><?php echo $row['article_text']?></h3>
+                    </div>
                     </div>
                 <?php    
         }
@@ -48,9 +58,10 @@
 
 
             </div>
-        <div class="filter w-25 bg-success d-flex flex-column justify-content-center  align-items-center" style="height:50vh">
+            <div class="border border-green-800" style="height: 50vh;"></div>
+            <div class="filter " style="height: 50vh;">
 
-            <div class="filter">
+                <div class="filter flex flex-col gap-5 ">
                 <?php
                 $tag = $con->prepare("SELECT * FROM tag
                 JOIN theme_tag ON theme_tag.tag_id = tag.tag_id
@@ -62,9 +73,10 @@
                 while($row = $result->fetch_assoc()) {
                     ?>
                    <div>
-                   
+                   <div class="w-36 ml-10 mt-3 border  border-green-400 rounded-xl h-8 flex justify-around hover:bg-green-300 duration-300 ease-in-out ">
                     <input type="checkbox" class="BOX"  name="BOX" value="<?php echo $row ['tag_id']?>">
-                    <label for="BOX"><?php echo $row['tag_name']?></label>
+                    <label class="pr-10 font-mono hover:text-white" for="BOX"><?php echo $row['tag_name']?></label>
+                 
                    </div>
                     
                     <?php
@@ -88,11 +100,11 @@
             $totalpage = ceil($pagination/10);
             if($totalpage>1){
                 ?>
-                <div class="pagination d-flex justify-content-center">
+                <div class="pagination flex justify-center mt-7 mb-7">
                     <?php
-                    for($i=0+1;$i<=$totalpage;$i++){
+                    for($i=1;$i<=$totalpage;$i++){
                         ?>
-                        <button class="page" value="<?php echo $i?>"><?php echo $i?></button>
+                        <button class="page w-14 rounded-xl border border-green-500 hover:bg-green-500 hover:text-white duration-200 ease-in-out " value="<?php echo $i?>"><?php echo $i?></button>
                         <?php
                     }
                     ?>
@@ -115,13 +127,21 @@
                 var pagebutton =document.querySelectorAll('.page');
 
 
-                article.forEach(element => {
-                    element.addEventListener('click' , function () {
-                            let cardvalue = this.getAttribute('data-key');
-                            window.open('ARTICLE_PAGE.php?articleid='+cardvalue)
-                    })
-                })
+                // article.forEach(element => {
+                //     element.addEventListener('click' , function () {
+                //             let cardvalue = this.getAttribute('data-key');
+                //             window.open('ARTICLE_PAGE.php?articleid='+cardvalue)
+                //     })
+                // });
 
+                function attachClickListeners(cardValue) {
+            console.log(cardValue);
+             if (cardValue) {
+                 window.location.href = `ARTICLE_PAGE.php?articleid=${cardValue}`;
+             } else {
+                 console.error("No data-key attribute found on clicked card.");
+             }
+}
 
                 
 
@@ -170,7 +190,7 @@
                 checkbox.forEach(check => {
                     check.addEventListener('change' , function () {
                         if(this.checked){
-                        checked.push(this.value);
+                        checked.push(this.value);  
                         }
                         else{
                             let index = checked.indexOf(this.value);
@@ -217,9 +237,6 @@
                         HTTP.send("page="+pagevalue + '&theme=' + <?php echo $idtheme?>);
                     })
                 })
-
-
-
 
                 console.log(checked);
 
