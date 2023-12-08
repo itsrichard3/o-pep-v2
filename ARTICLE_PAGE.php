@@ -89,7 +89,8 @@ $uniqueID = preg_replace("/[^A-Za-z]/", '', $uniqueID);
             </form>
 <?php endforeach; ?>
         <!-- Modal -->
-<div class="modal fade" id="hehe" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<!-- Modal -->
+<div class="modal fade" id="<?php echo $uniqueID?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -97,11 +98,17 @@ $uniqueID = preg_replace("/[^A-Za-z]/", '', $uniqueID);
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        ...
+        <label for="article_title">article_title</label>
+        <input type="text" class="w-100 article_title" value="<?php echo $row['article_title']?>">
+        <label for="textarea" class="mt-1">article_text</label>
+        <textarea class="form-control mt-2 message-text"><?php echo $row['article_text']?></textarea>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" name="article_image" class="form-control article_image">
+        </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <button type="button" class="SAVEARTICLE btn btn-primary" value="<?php echo $row['article_id']?>">Save changes</button>
       </div>
     </div>
   </div>
@@ -135,6 +142,7 @@ $uniqueID = preg_replace("/[^A-Za-z]/", '', $uniqueID);
             $comment->bind_param('i',$articleID);
             $comment->execute();
             $resultcomments = $comment->get_result();
+            $n = 0;
             while ($row = $resultcomments->fetch_assoc()) {
                 $commentID = $row['comment_id'];
             
@@ -171,7 +179,7 @@ $uniqueID = preg_replace("/[^A-Za-z]/", '', $uniqueID);
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="SAVE btn btn-primary" value="<?php echo $row['comment_id']?>" data-bs-dismiss="modal">Save changes</button>
+        <button onclick="modify(this,<?php echo $n?>)" type="button" class="SAVE btn btn-primary" value="<?php echo $row['comment_id']?>" data-bs-dismiss="modal">Save changes</button>
       </div>
     </div>
   </div>
@@ -179,6 +187,7 @@ $uniqueID = preg_replace("/[^A-Za-z]/", '', $uniqueID);
                             
                             
                             <?php
+                            $n++;
                         }
                         ?>
                     </div>
@@ -294,10 +303,11 @@ $uniqueID = preg_replace("/[^A-Za-z]/", '', $uniqueID);
             var SAVE =document.querySelectorAll('.SAVE');
 
 
-            SAVE.forEach((btn,i) => {
-                btn.addEventListener('click' , function () {
-                    let valuesave =COMMENTMODIFY[i].value;
+                    function modify (btn,i) {
+                        let valuesave =COMMENTMODIFY[i].value;
                     let btnvalue = btn.value;
+                    console.log(valuesave);
+                    console.log(btnvalue);
                     let XML = new XMLHttpRequest();
                     XML.onreadystatechange = function () {
                         if(this.status==200) {
@@ -307,9 +317,43 @@ $uniqueID = preg_replace("/[^A-Za-z]/", '', $uniqueID);
                     }
                     XML.open('GET','MODIFY.php?CMTID='+btnvalue + '&CMTVALUE='+valuesave);
                     XML.send();
+                    }
+            
 
+
+                        var save = document.querySelectorAll('.SAVEARTICLE');
+            var articletitle = document.querySelectorAll('.article_title');
+            var messagetext = document.querySelectorAll('.message-text');
+            var articleimage = document.querySelectorAll('.article_image');
+
+            save.forEach((btn, index) => {
+                btn.addEventListener('click', function () {
+                    let message = messagetext[index].value;
+                    let articletitletest = articletitle[index].value;
+                    let articleImageFile = articleimage[index].files[0];
+
+                    let savebtn = btn.value;
+
+                    let formData = new FormData(); 
+                    formData.append('articleid', savebtn);
+                    formData.append('articletitle', articletitletest);
+                    formData.append('articlemessage', message);
+                    formData.append('articleimg', articleImageFile); 
+
+                    let XML = new XMLHttpRequest();
+
+                    XML.onreadystatechange = function () {
+                        if (this.status == 200) {
+                            console.log("Successfully updated!");
+                            location.reload();
+                        }
+                    }
+
+                    XML.open('POST', 'modifyarticle.php');
+                    XML.send(formData); 
                 })
             })
+
 
             
 
