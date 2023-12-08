@@ -10,7 +10,8 @@ else{
 if(isset($_GET["articleid"])) {
     $articleID = $_GET["articleid"];
 }
-
+$uniqueID = bin2hex(random_bytes(8));
+$uniqueID = preg_replace("/[^A-Za-z]/", '', $uniqueID);
 ?>
 
 
@@ -42,7 +43,11 @@ if(isset($_GET["articleid"])) {
        <?php
        if($row['article_user'] == $user_id || $row['role_id'] == 2){
         ?>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#hehe">Modify</button>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#<?php echo $uniqueID?>">Modify</button>
+        <form action="./delete_article.php" method="post" class="d-inline">
+            <input type="hidden" name="articleID" value="<?php echo $articleID ?>">
+            <button type="submit" class="btn btn-danger" value="<?php echo $row['article_id']?>">DELETE ARTICLE</button>
+        </form>
         <?php
        }
        ?>
@@ -297,6 +302,7 @@ if(isset($_GET["articleid"])) {
                     XML.onreadystatechange = function () {
                         if(this.status==200) {
                             fetchUpdatedComments();
+                            location.reload();
                         }
                     }
                     XML.open('GET','MODIFY.php?CMTID='+btnvalue + '&CMTVALUE='+valuesave);
