@@ -1,12 +1,15 @@
 <?php
 session_start();
-if(isset($_SESSION["logged"]) && $_SESSION["logged"] && isset($_SESSION["role_id"]) && $_SESSION["role_id"] == 1) {
+if (isset($_SESSION["logged"]) && $_SESSION["logged"] && isset($_SESSION["role_id"]) && $_SESSION["role_id"] == 1) {
   header("Location:home.php");
 }
 require_once('./app/config/db.php');
 require_once("./app/funcs/category.php");
 require_once('./app/funcs/plant.php');
 require_once('./app/funcs/logout.php');
+require_once("./app/funcs/themes.php");
+require_once("./app/funcs/tag.php");
+
 
 function handleCategory()
 {
@@ -14,7 +17,7 @@ function handleCategory()
     addC($_POST["categoryName"]);
   } else if (isset($_POST["deleteCategory"])) {
     delete($_POST["category_id"]);
-  }else if(isset($_POST["updateCategoryName"])) {
+  } else if (isset($_POST["updateCategoryName"])) {
     update($_POST["updatedCategoryID"], $_POST["newCategoryName"]);
   }
 }
@@ -41,9 +44,10 @@ handlePlant();
 
 $plants = getAllP();
 
-function adminLogout() {
+function adminLogout()
+{
   if (isset($_POST["logout"])) {
-   
+
     if (logout()) {
       // die("here");
       header("Location: index.php");
@@ -52,6 +56,60 @@ function adminLogout() {
 }
 
 adminLogout();
+
+
+
+$themes = getAllT();
+
+function handleTheme()
+{
+  if (isset($_POST["addTheme"])) {
+
+
+    $data = [
+      "theme_name" => trim($_POST['themeName']),
+      "theme_img" => $_FILES['theme_img']['name'],
+    ];
+    if (addT($data)) {
+      header('Location: dashboard.php');
+    }
+  } else if (isset($_POST["deleteTheme"])) {
+    if (deleteT($_POST["theme_id"])) {
+      header('Location: dashboard.php');
+    }
+  } else if (isset($_POST["updateThemeName"])) {
+    //die(print_r($_POST["updatedThemeID"]));
+    if (updateT($_POST["updatedThemeID"], $_POST["newThemeName"])) {
+      header('Location: dashboard.php');
+    }
+  }
+}
+
+handleTheme();
+
+
+
+$tags = getAllTag();
+
+function handleTag()
+{
+  if (isset($_POST["addTag"])) {
+    $data = [
+      "tag_name" => trim($_POST['tagName']),
+      "theme_id" => $_POST['theme_id'],
+    ];
+    if(addTag($data)){
+      header('Location: dashboard.php');
+    } 
+  } else if (isset($_POST["deleteTag"])) {
+    if(deleteTag($_POST["tag_id"])) {
+      header('Location: dashboard.php');
+    }
+    
+  }
+}
+handleTag();
+
 ?>
 
 <!DOCTYPE html>
@@ -124,7 +182,7 @@ adminLogout();
           </a>
         </li>
         <li>
-          <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>" >
+          <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
             <span class="icon">
               <ion-icon name="log-out-outline"></ion-icon>
             </span>
@@ -140,7 +198,7 @@ adminLogout();
           <ion-icon name="menu-outline"></ion-icon>
         </div>
 
-      
+
 
         <div class="user">
           <img src="assets/imgs/customer01.jpg" alt="">
@@ -150,7 +208,7 @@ adminLogout();
       <div class="cardBox">
         <div class="card">
           <div>
-            <div class="numbers">4</div>
+            <div class="numbers"><?php echo $categories->num_rows; ?></div>
             <div class="cardName">Category</div>
           </div>
 
@@ -161,7 +219,7 @@ adminLogout();
 
         <div class="card">
           <div>
-            <div class="numbers">10</div>
+            <div class="numbers"><?php echo $plants->num_rows; ?></div>
             <div class="cardName">Plants</div>
           </div>
 
@@ -177,7 +235,7 @@ adminLogout();
           </div>
 
           <div class="iconBx">
-          <ion-icon name="people-outline"></ion-icon>
+            <ion-icon name="people-outline"></ion-icon>
           </div>
         </div>
 
@@ -194,6 +252,7 @@ adminLogout();
       </div>
 
       <div class="details">
+        <!-- Category -->
         <div class="recentOrders">
           <div class="cardHeader">
             <h2>Plant's Categories</h2>
@@ -221,28 +280,29 @@ adminLogout();
                   <td><?php echo $category["category_name"]; ?></td>
                   <td class="btns">
                     <input type="hidden" value="<?php echo $category["category_id"]; ?>">
-                  <button name="modifyCategory" class="btn update_btn">Modify</button>
+                    <button name="modifyCategory" class="btn update_btn">Modify</button>
                     <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
                       <input id="updateCategoryName" name="category_id" type="hidden" value="">
-                      <button name="deleteCategory"  class="btn bred" type="submit">Delete</button>
+                      <button name="deleteCategory" class="btn bred" type="submit">Delete</button>
                     </form>
-                    
+
                   </td>
                 </tr>
               <?php
               }    ?>
               <div id="modifyPopup" class="popup">
-                      <form class="popup-content" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
-                        <span class="close" onclick="closeModifyPopup()">&times;</span>
-                        <label for="categoryName">New Category Name:</label>
-                        <input name="updatedCategoryID" id="categoryID" type="hidden" value="">
-                        <input name="newCategoryName" type="text" id="categoryNameModify" >
-                        <button name="updateCategoryName" type="submit">Change</button>
-                      </form>
-                </div>
+                <form class="popup-content" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+                  <span class="close" onclick="closeModifyPopup()">&times;</span>
+                  <label for="categoryName">New Category Name:</label>
+                  <input name="updatedCategoryID" id="categoryID" type="hidden" value="">
+                  <input name="newCategoryName" type="text" id="categoryNameModify">
+                  <button name="updateCategoryName" type="submit">Change</button>
+                </form>
+              </div>
             </tbody>
           </table>
         </div>
+        <!-- Plant -->
         <div class="recentOrders">
           <div class="cardHeader">
             <h2>Plants</h2>
@@ -298,78 +358,119 @@ adminLogout();
             </tbody>
           </table>
         </div>
-        <!-- <div class="recentOrders">
+        <!-- theme -->
+        <div class="recentOrders">
           <div class="cardHeader">
-            <h2>Recent Orders</h2>
-            <div>
-              <a href="#" class="btn">View All</a>
-              <a href="#" class="btn">View All</a>
-            </div>
+            <h2>Blog Themes</h2>
+            <a href="#" class="btn" onclick="openPopupT()">Add Themes</a>
+          </div>
+          <div id="themePopup" class="popup">
+            <form class="popup-content" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST" enctype="multipart/form-data">
+              <span class="close" onclick="closePopupT()">&times;</span>
+              <label for="themeName">Theme Name:</label>
+              <input type="text" id="themeName" name="themeName">
+              <label for="themeImg">Theme Image:</label>
+              <input type="file" id="themeImg" name="theme_img">
+              <button type="submit" name="addTheme">Add</button>
+            </form>
           </div>
           <table>
             <thead>
               <tr>
+                <td>Image</td>
                 <td>Name</td>
-                <td>Price</td>
-                <td>Payment</td>
-                <td>Status</td>
+                <td>Operations</td>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>Star Refrigerator</td>
-                <td>$1200</td>
-                <td>Paid</td>
-                <td><span class="status delivered">Delivered</span></td>
-              </tr>
-              <tr>
-                <td>Dell Laptop</td>
-                <td>$110</td>
-                <td>Due</td>
-                <td><span class="status pending">Pending</span></td>
-              </tr>
-              <tr>
-                <td>Apple Watch</td>
-                <td>$1200</td>
-                <td>Paid</td>
-                <td><span class="status return">Return</span></td>
-              </tr>
-              <tr>
-                <td>Addidas Shoes</td>
-                <td>$620</td>
-                <td>Due</td>
-                <td><span class="status inProgress">In Progress</span></td>
-              </tr>
-              <tr>
-                <td>Star Refrigerator</td>
-                <td>$1200</td>
-                <td>Paid</td>
-                <td><span class="status delivered">Delivered</span></td>
-              </tr>
-              <tr>
-                <td>Dell Laptop</td>
-                <td>$110</td>
-                <td>Due</td>
-                <td><span class="status pending">Pending</span></td>
-              </tr>
-              <tr>
-                <td>Apple Watch</td>
-                <td>$1200</td>
-                <td>Paid</td>
-                <td><span class="status return">Return</span></td>
-              </tr>
-              <tr>
-                <td>Addidas Shoes</td>
-                <td>$620</td>
-                <td>Due</td>
-                <td><span class="status inProgress">In Progress</span></td>
-              </tr>
+              <?php foreach ($themes as $theme) {
+              ?>
+                <tr>
+                  <td><img style="width: 50px;" src="./assets/imgs/<?php echo $theme["theme_img"]; ?>" alt=""></td>
+                  <td><?php echo $theme["theme_name"]; ?></td>
+                  <td class="btns">
+                    <input type="hidden" value="<?php echo $theme["theme_id"]; ?>">
+                    <button name="modifyThemePopup" class="btn update_theme_btn" onclick="openModifyPopupT()">Modify</button>
+                    <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+                      <input id="updateThemeName" name="theme_id" type="hidden" value="<?php echo $theme["theme_id"]; ?>">
+                      <button name="deleteTheme" class="btn bred" type="submit">Delete</button>
+                    </form>
+
+                  </td>
+                </tr>
+              <?php
+              }    ?>
+              <div id="modifyThemePopup" class="popup">
+                <form class="popup-content" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+                  <span class="close" onclick="closeModifyPopupT()">&times;</span>
+                  <label for="themeName">New Theme Name:</label>
+                  <input name="updatedThemeID" id="themeID" type="hidden" value="">
+                  <input name="newThemeName" type="text" id="themeNameModify">
+                  <button name="updateThemeName" type="submit">Change</button>
+                </form>
+              </div>
             </tbody>
           </table>
-        </div> -->
+        </div>
+        <!-- tag -->
+        <div class="recentOrders">
+          <div class="cardHeader">
+            <h2>Theme's Tag</h2>
+            <a href="#" class="btn" onclick="openPopupTag()">Add Tag</a>
+          </div>
+          <div id="tagPopup" class="popup">
+            <form class="popup-content" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST" enctype="multipart/form-data">
+              <span class="close" onclick="closePopupTag()">&times;</span>
+              <label for="tagName">Tag Name:</label>
+              <input type="text" id="tagName" name="tagName">
+              <label for="tagName">Theme:</label>
+              <select name="theme_id">
+                <option value="">Select Theme</option>
+                <?php foreach($themes as $theme) {?>
+                  <option value="<?php echo $theme["theme_id"]; ?>"><?php echo $theme["theme_name"]; ?></option>
+                  <?php
+
+                } ?>
+                
+              </select>
+              <button type="submit" name="addTag">Add</button>
+            </form>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <td>Tag</td>
+                <td>Theme</td>
+                <td>Operations</td>
+              </tr>
+            </thead>
+            <tbody>
+              <?php foreach ($tags as $tag) {
+              ?>
+                <tr>
+                  
+                  <td><?php echo $tag["tag_name"]; ?></td>
+                  <td><?php echo $tag["theme_name"]; ?></td>
+                  <td class="btns">
+                    
+                    <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+                    <input name="tag_id" type="hidden" value="<?php echo $tag["tag_id"]; ?>">
+                      <button name="deleteTag" class="btn bred" type="submit">Delete</button>
+                    </form>
+
+                  </td>
+                </tr>
+              <?php
+              }    ?>
+
+            </tbody>
+          </table>
+        </div>
       </div>
     </main>
   </div>
+
+
 
 
   <script src="./assets/js/main.js"></script>
