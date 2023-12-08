@@ -8,9 +8,12 @@ if(isset($_GET['themesearch'])){
     while($row = $result->fetch_assoc()) {
         $articleID = $row['article_id'];
         ?>
-        <div onclick="attachClickListeners(<?php echo $articleID?>)" class="card h-auto col-sm px-0 mx-0" data-key="<?php echo $row['article_id']?>">
-                        <h1><?php echo $row['article_title']?></h1>
-                        <h3><?php echo $row['article_text']?></h3>
+        <div onclick="attachClickListeners(<?php echo $row['article_id']?>)" class="card  h-96 ml-7 border border-green-500 rounded-xl transition-transform duration-300 ease-in-out transform hover:scale-110 hover:shadow-2xl mr-4" data-key="<?php echo $row['article_id']?>">
+            <div class="ml-5 mr-5 mt-5 mb-5">
+                        <h1  class="text-2xl text-center font-semibold mb-3 "><?php echo $row['article_title']?></h1>
+                        <img class=" h-56 w-56 mb-5" src="<?php echo  $row['article_img'] ?>" alt="">
+                        <h3 class=" font-sans"><?php echo $row['article_text']?></h3>
+                    </div> 
                     </div>
         <?php
 }
