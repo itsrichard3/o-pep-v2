@@ -24,19 +24,23 @@ if(isset($_GET['theme'])) {
             $tag->bind_param('i',$idtheme);
             $tag->execute();
             $result = $tag->get_result();
+            $number = $_GET['articleCounter'];
             while($row = $result->fetch_assoc()) {
-            $number = 1;
                 ?>
                 <div>
-                <input type="checkbox" value="<?php echo $row['tag_id']?>" name="tags_<?php echo $number?>[]">
+                <input type="checkbox" value="<?php echo $row['tag_id']?>" name="tags[<?php echo $number?>][]">
                 <label for="checkbox"><?php echo $row['tag_name']?></label>
                 </div>
                 <?php
-                $number++;
             }
+            
+            echo $number;
             ?>
+
+            
         </div>
         <?php
+        
     }
 }
 
