@@ -1,3 +1,66 @@
+let openCart = document.querySelector ('.cart-open');
+let closeCart = document.querySelector('.cart-close');
+let list = document.querySelector('.cartItemsList');
+let body = document.querySelector('body');
+
+openCart.addEventListener('click', ()=>{
+    body.classList.add('active');
+})
+closeCart.addEventListener('click' , ()=>{
+    body.classList.remove('active');
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // /*=============== SHOW MENU ===============*/
 // const navMenu = document.getElementById('nav-menu'),
 //       navToggle = document.getElementById('nav-toggle'),
@@ -148,14 +211,3 @@
 
 
 
-let openCart = document.querySelector ('.cart-open');
-let closeCart = document.querySelector('.cart-close');
-let list = document.querySelector('.cartItemsList');
-let body = document.querySelector('body');
-
-openCart.addEventListener('click', ()=>{
-    body.classList.add('active');
-})
-closeCart.addEventListener('click' , ()=>{
-    body.classList.remove('active');
-})
