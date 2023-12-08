@@ -77,6 +77,14 @@ orderItems();
 
   <link rel="stylesheet" href="./assets/css/home.css">
 
+  <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+      integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    >
+
   <title>Home </title>
 </head>
 
@@ -101,6 +109,11 @@ orderItems();
             <a href="#products" class="nav__link">Products</a>
           </li>
           <!-- shopping cart -->
+          <li>
+            <a href="./blog.php" class="button--flex navbar__button">
+              <i class="fa-brands fa-hive"></i>
+            </a>
+          </li>
           <li>
             <button class="button--flex navbar__button cart-open">
               <i class="ri-shopping-bag-line"></i>

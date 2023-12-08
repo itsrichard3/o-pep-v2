@@ -2,7 +2,6 @@
     include_once('./app/config/db.php');
     if(isset($_GET['theme'])) {
         $idtheme = $_GET['theme'];
-        echo $idtheme;
 }
     ?>
 
