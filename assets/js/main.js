@@ -1,3 +1,7 @@
+
+
+
+
 const updateButtons = document.querySelectorAll(".update_btn");
 const categoryNameInput = document.getElementById("categoryNameModify");
 const categoryIDInput = document.getElementById("categoryID");
@@ -58,8 +62,53 @@ updateButtons.forEach((btn) => {
   btn.addEventListener("click", () => {
     const categoryName = btn.parentElement.parentElement.childNodes[1].textContent;
     categoryNameInput.value = categoryName;
-    // console.log(btn.parentElement.childNodes[1].value);
     categoryIDInput.value = btn.parentElement.childNodes[1].value;
     openModifyPopup();
   });
 });
+
+
+
+const update_theme_btn = document.querySelectorAll(".update_theme_btn");
+const themeNameInput = document.getElementById("themeNameModify")
+const themeIdInput = document.getElementById("themeID");
+
+
+update_theme_btn.forEach(btn => {
+  btn.addEventListener("click", () => {
+    const themeName = btn.parentElement.parentElement.childNodes[3].textContent;
+    themeNameInput.value = themeName;
+    
+    themeIdInput.value = btn.parentElement.childNodes[1].value;
+    console.log(themeIdInput.value);
+    // document.getElementById("modifyThemePopup").style.display = "block";
+  });
+});
+
+
+function openPopupT() {
+  document.getElementById("themePopup").style.display = "block";
+}
+
+function closePopupT() {
+  document.getElementById("themePopup").style.display = "none";
+}
+function openModifyPopupT() {
+  // console.log("clicked");
+  document.getElementById("modifyThemePopup").style.display = "block";
+}
+
+function closeModifyPopupT() {
+  document.getElementById("modifyThemePopup").style.display = "none";
+}
+
+function openPopupTag() {
+  document.getElementById("tagPopup").style.display = "block";
+}
+
+function closePopupTag() {
+  document.getElementById("tagPopup").style.display = "none";
+}
+
+
+
