@@ -9,7 +9,7 @@ if(isset($_GET['search'])) {
     $result = $searchfield->get_result();
     while($row = $result->fetch_assoc()) {
         ?>
-        <div class="card">
+        <div onclick="attachClickListeners(<?php echo $row['article_id']?>)" class="card" data-key="<?php echo $row['article_id'] ?>">
                         <h1><?php echo $row['article_title']?></h1>
                         <h3><?php echo $row['article_text']?></h3>
                     </div>
