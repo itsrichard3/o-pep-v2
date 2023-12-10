@@ -12,6 +12,14 @@ if(isset($_GET["articleid"])) {
 }
 $uniqueID = bin2hex(random_bytes(8));
 $uniqueID = preg_replace("/[^A-Za-z]/", '', $uniqueID);
+
+$theme = $con->prepare("SELECT theme_ID FROM `article` WHERE article_id = ?;");
+$theme->bind_param('i',$articleID);
+$theme->execute();
+$result = $theme->get_result();
+$themeID_row = $result->fetch_assoc();
+$idtheme = $themeID_row['theme_ID'];
+
 ?>
 
 
@@ -29,6 +37,43 @@ $uniqueID = preg_replace("/[^A-Za-z]/", '', $uniqueID);
     <script src="https://use.fontawesome.com/fe459689b4.js"></script>
 
 <body>
+
+  <header>
+  <nav class="nav container">
+      <a href="#" class="nav__logo">
+        <img src="./assets/imgs/logoG.png" alt="logo">
+      </a>
+      <div class="search">
+        <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+          <input name="plant_name" type="text" placeholder="Search here">
+          <i class="ri-search-2-line"></i>
+        </form>
+      </div>
+      <div class="nav__menu" id="nav-menu">
+        <ul class="nav__list">
+          <li class="nav__item">
+            <a href="#home" class="nav__link active-link">Home</a>
+          </li>
+          <li class="nav__item">
+            <a href="#products" class="nav__link">Products</a>
+          </li>
+          <li class="nav__item">
+            <a href="./articles.php?theme=<?php echo $idtheme?>" class="nav__link">Articles</a>
+          </li>
+          <!-- log out -->
+          <li>
+            <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+              <button type="submit" name="logout" class="button--flex navbar__button">
+                <i class="ri-logout-box-r-line"></i>
+              </button>
+            </form>
+          </li>
+        </ul>
+
+
+      </div>
+    </nav>
+  </header>
 
     <?php
     $selection = $con->prepare("SELECT * FROM article,users WHERE  article.article_id = ? AND  users.user_id = ?");
