@@ -11,9 +11,9 @@ if(isset($_GET['theme'])) {
     $result = $select->get_result();
     while($row = $result->fetch_assoc()) {
         ?>
-        <input type="file" id="upload_img" name="article_image[]" onchange="previewImage(event)">
-        <input type="text" placeholder="TITLE...." name="article_title[]">
-        <input type="text" placeholder="write your text ....." name="article_text[]">
+        <input type="file" id="upload_img" class="form-control" name="article_image[]" onchange="previewImage(event)">
+        <input type="text" placeholder="TITLE...." class="form-control" name="article_title[]">
+        <input type="text" placeholder="write your text ....." class="form-control" name="article_text[]">
         <button type="button" onclick="removeArticle(this)">DELETE</button>
         <div class="checkboxes d-flex flex-column">
             <?php
@@ -28,7 +28,7 @@ if(isset($_GET['theme'])) {
             while($row = $result->fetch_assoc()) {
                 ?>
                 <div>
-                <input type="checkbox" value="<?php echo $row['tag_id']?>" name="tags[<?php echo $number?>][]">
+                <input type="checkbox" class="form-check-input" value="<?php echo $row['tag_id']?>" name="tags[<?php echo $number?>][]">
                 <label for="checkbox"><?php echo $row['tag_name']?></label>
                 </div>
                 <?php

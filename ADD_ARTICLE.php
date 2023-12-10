@@ -98,11 +98,11 @@ $counter = 0;
         <img class="previewimage w-50 h-50" src="" alt="Preview">
     </div> -->
 
-    <form action="./app/funcs/massInsertion.php" method="POST" class="forma d-flex flex-column">
+    <form action="./app/funcs/massInsertion.php" method="POST" class="forma d-flex flex-column" enctype="multipart/form-data">
     <div>
-        <input type="file" id="upload_img" name="article_image[]" onchange="previewImage(event)">
-        <input type="text" placeholder="TITLE...." name="article_title[]">
-        <input type="text" placeholder="write your text ....." name="article_text[]">
+        <input type="file" id="upload_img" class="form-control" name="article_image[]" >
+        <input type="text" placeholder="TITLE...." class="form-control" name="article_title[]">
+        <input type="text" placeholder="write your text ....." class="form-control" name="article_text[]">
         <input type="hidden" name="theme" value="<?php echo $theme ?>">
         <div class="checkboxes d-flex flex-column">
             <?php
@@ -118,7 +118,7 @@ $counter = 0;
                 
                 ?>
                 <div>
-                <input type="checkbox" value="<?php echo $row['tag_id']?>" name="tags[<?php echo $counter?>][]">
+                <input type="checkbox" class="form-check-input" value="<?php echo $row['tag_id']?>" name="tags[<?php echo $counter?>][]">
                 <label for="checkbox"><?php echo $row['tag_name']?></label>
                 </div>
                 <?php
@@ -147,17 +147,17 @@ $counter = 0;
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <script>
-        function previewImage(event) {
-            var input = event.target;
-            var preview = document.querySelector('.previewimage');
-            if (input.files && input.files[0]) {
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                }
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
+        // function previewImage(event) {
+        //     var input = event.target;
+        //     var preview = document.querySelector('.previewimage');
+        //     if (input.files && input.files[0]) {
+        //         var reader = new FileReader();
+        //         reader.onload = function(e) {
+        //             preview.src = e.target.result;
+        //         }
+        //         reader.readAsDataURL(input.files[0]);
+        //     }
+        // }
         var checkboxesdiv =document.querySelector('.checkboxes');
 
 
