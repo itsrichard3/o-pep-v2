@@ -1,5 +1,9 @@
 <?php
 include_once("./app/config/db.php");
+require_once('./app/funcs/logout.php');
+
+
+
 session_start();
 if(isset($_SESSION["user_id"])){
 $user_id = $_SESSION["user_id"];
@@ -30,8 +34,13 @@ $idtheme = $themeID_row['theme_ID'];
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="shortcut icon" href="assets/imgs/logoG.png" type="image/x-icon">
+
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
     <link rel="stylesheet" href="./assets/css/ratings.css">
-    <title>Document</title>
+    <link rel="stylesheet" href="./assets/css/articlepage.css">
+    <link rel="stylesheet" href="./assets/css/home.css">
+    <title>article</title>
 </head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://use.fontawesome.com/fe459689b4.js"></script>
@@ -83,6 +92,8 @@ $idtheme = $themeID_row['theme_ID'];
     if($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         ?>
+
+        
         <div class="">
         <H1 class="text-center"><?php echo $row['article_title']?></h1>
        <?php
@@ -116,25 +127,6 @@ $idtheme = $themeID_row['theme_ID'];
                 $status = 0;
             }
             ?>
-
-
-            <form action="./rating.php" method="post">
-               <input type="hidden" name="articleID" value="<?php echo $articleID; ?>">
-               <button name="like" value="1" class="like <?php if($status == 'like') echo "selected"; ?>" data-article-id = <?php echo $article_id ?> >
-                   <i class="fa fa-thumbs-up"></i>
-                   <span class="like_count <?php $article_id; ?> data_count = <?php echo $likes_count;  ?>"> <?php echo $likes_count; ?></span>
-               </button>
-            </form>
-            <form action="./rating.php" method="post">
-                <input type="hidden" name="articleID" value="<?php echo $articleID; ?>"  >
-                <button name="like" value="0" class="dislike <?php if($status == 'dislike') echo "selected"; ?>" data-article-id = <?php echo $article_id ?> >
-                    <i class="fa fa-thumbs-down"></i>
-                    <span class="dislike_count <?php $article_id; ?> data_count = <?php echo $dislikes_count;  ?>"> <?php echo $dislikes_count; ?></span>
-                </button>
-            </form>
-<?php endforeach; ?>
-        <!-- Modal -->
-<!-- Modal -->
 <div class="modal fade" id="<?php echo $uniqueID?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -158,9 +150,6 @@ $idtheme = $themeID_row['theme_ID'];
     </div>
   </div>
 </div>
-
-
-
         <div>
             <div class="w-25">
                 <img src="./assets/imgs/uploads/<?php echo $row['article_img'] ?>" alt="">
@@ -169,10 +158,30 @@ $idtheme = $themeID_row['theme_ID'];
                 <p><?php echo $row['article_text']?></p>
             </div>
         </div>
+<div class="like-dislike-btn">
+            <form action="./rating.php" method="post">
+               <input type="hidden" name="articleID" value="<?php echo $articleID; ?>">
+               <button name="like" value="1" class="like <?php if($status == 'like') echo "selected"; ?>" data-article-id = <?php echo $article_id ?> >
+                   <i class="fa fa-thumbs-up"></i>
+                   <span class="like_count <?php $article_id; ?> data_count = <?php echo $likes_count;  ?>"> <?php echo $likes_count; ?></span>
+               </button>
+            </form>
+            <form action="./rating.php" method="post">
+                <input type="hidden" name="articleID" value="<?php echo $articleID; ?>"  >
+                <button name="like" value="0" class="dislike <?php if($status == 'dislike') echo "selected"; ?>" data-article-id = <?php echo $article_id ?> >
+                    <i class="fa fa-thumbs-down"></i>
+                    <span class="dislike_count <?php $article_id; ?> data_count = <?php echo $dislikes_count;  ?>"> <?php echo $dislikes_count; ?></span>
+                </button>
+            </form>
+<?php endforeach; ?>
+</div>
+        <!-- Modal -->
+<!-- Modal -->
+
 
 
         <h2>COMMENTS</h2>
-            <div>
+            <div class="cmntinput">
             <input type="text" id="COMMENT" placeholder="Add comment..." name="ADDCOMMENT">
             <button id="ADDCOMMENT">COMMENT</button>
             </div>
