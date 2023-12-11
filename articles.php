@@ -23,42 +23,15 @@
     </svg>
 </div>
 
-<a href="./ADD_ARTICLE.php?theme=<?php echo $idtheme?>" class="w-44 text-center p-2 h-10 text-green-600 font-mono mr-5 rounded-xl border border-green-600 hover:bg-green-300 hover:text-white ">Add New Article</a>
- </div>
+<a href="./ADD_ARTICLE.php?theme=<?php echo $idtheme?>" class="w-44 text-center p-2 h-10 text-green-600 font-mono mr-5 rounded-xl border border-green-600 hover:bg-green-300 hover:text-white ">Add New Article</a> </div>
 
 
 
 
         <div class="HERO  flex mt-5 space-x-10">
       
-            <div class="left  grid  grid-cols-3 gap-4 place-content-center ">
-
-            <!-- content here -->
-            <?php 
-            if(!isset($_GET['themesearch']) && !isset($_GET['search']) && !isset($_POST['page'])) {
-                $selec = $con->prepare("SELECT * FROM article WHERE theme_id = $idtheme LIMIT 10");
-                $selec->execute();
-                $result = $selec->get_result();
-                while($row = $result->fetch_assoc()) {
-                    $articleID = $row['article_id'];
-                    ?>
-                    <div onclick="attachClickListeners(<?php echo $articleID?>)" class="card card h-96 ml-7 border border-green-500 rounded-xl transition-transform duration-300 ease-in-out transform hover:scale-110 hover:shadow-2xl mr-4" data-key="<?php echo $articleID?>">
-                    <div class="ml-5 mr-5 mt-5 mb-5">
-                        <h1 class="text-2xl text-center font-semibold mb-3 "><?php echo $row['article_title']?></h1>
-                        <img class=" h-56 w-56 mb-5" src="./assets/imgs/uploads/<?php echo $row['article_img'] ?>" alt="">
-                        <h3 class=" font-sans"><?php echo $row['article_text']?></h3>
-                    </div>
-                    </div>
-                <?php    
-        }
-    }
             
-            ?>
-           
-
-
-            </div>
-            <div class="border border-green-800" style="height: 50vh;"></div>
+            
             <div class="filter " style="height: 50vh;">
 
                 <div class="filter flex flex-col gap-5 ">
@@ -78,16 +51,47 @@
                     <label class="pr-10 font-mono hover:text-white" for="BOX"><?php echo $row['tag_name']?></label>
                  
                    </div>
-                    
+                   </div>
+                   
                     <?php
                 }
                 ?>
+            
+
+        </div>
+        </div>
+        <div class="border border-green-800" ></div>
+        <div class="left grid  grid-cols-2 gap-4 place-content-center  ">
+
+            <!-- content here -->
+            <?php 
+            if(!isset($_GET['themesearch']) && !isset($_GET['search']) && !isset($_POST['page'])) {
+                $selec = $con->prepare("SELECT * FROM article WHERE theme_id = $idtheme LIMIT 10");
+                $selec->execute();
+                $result = $selec->get_result();
+                while($row = $result->fetch_assoc()) {
+                    $articleID = $row['article_id'];
+                    ?>
+                    <div onclick="attachClickListeners(<?php echo $articleID?>)" class="card  ml-7 border border-green-500 rounded-xl transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-2xl mr-4" data-key="<?php echo $articleID?>">
+                    <div class="ml-5 mr-5 mt-5 mb-5">
+                        <h1 class="text-2xl text-center font-semibold mb-3 "><?php echo $row['article_title']?></h1>
+                        <img class=" h-96 w-96 mb-5" src="./assets/imgs/uploads/<?php echo $row['article_img'] ?>" alt="">
+                        <h3 class=" font-sans"><?php echo $row['article_text']?></h3>
+                    </div>
+                    </div>
+                <?php    
+        }
+    }
+            
+            ?>
+           
+
+
             </div>
-
         </div>
-        </div>
+        
 
-        <div class="pagination  d-flex justify-content-center">
+        <div class="pagination ">
         <?php
             
 
@@ -100,7 +104,7 @@
             $totalpage = ceil($pagination/10);
             if($totalpage>1){
                 ?>
-                <div class="pagination flex justify-center mt-7 mb-7">
+                <div class="pagination  flex justify-center mt-7 mb-7">
                     <?php
                     for($i=1;$i<=$totalpage;$i++){
                         ?>

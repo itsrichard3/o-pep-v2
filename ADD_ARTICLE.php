@@ -89,22 +89,23 @@ $counter = 0;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+       <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
     <title>Add articles</title>
 </head>
 <body>
-  <div class="hero d-flex align-items-center justify-content-center">
+  <div class="hero border border-green-600 max-w-5xl mx-auto rounded-xl mb-3 pl-40 pr-40  mt-10   "">
   <!-- <div class="preview h-50 w-50 d-flex align-items-center justify-content-center">
         <img class="previewimage w-50 h-50" src="" alt="Preview">
     </div> -->
 
     <form action="./app/funcs/massInsertion.php" method="POST" class="forma d-flex flex-column" enctype="multipart/form-data">
-    <div>
-        <input type="file" id="upload_img" class="form-control" name="article_image[]" >
-        <input type="text" placeholder="TITLE...." class="form-control" name="article_title[]">
-        <input type="text" placeholder="write your text ....." class="form-control" name="article_text[]">
+    <div class="flex flex-col gap-8 items-center mt-5">
+        <input  type="file" id="upload_img" class="form-control" name="article_image[]" >
+        <input  class="w-full h-10 border border-green-700 rounded-xl pl-10"  type="text" placeholder="TITLE...." class="form-control" name="article_title[]">
+        <input class="w-full h-10 border border-green-700 rounded-xl pl-10 " type="text" placeholder="write your text ....." class="form-control" name="article_text[]">
         <input type="hidden" name="theme" value="<?php echo $theme ?>">
-        <div class="checkboxes d-flex flex-column">
+        <div class="checkboxes mr-96">
             <?php
             $tag=$con->prepare("SELECT * FROM theme_tag
             JOIN tag ON tag.tag_id = theme_tag.tag_id
@@ -117,8 +118,8 @@ $counter = 0;
             while($row = $result->fetch_assoc()) {
                 
                 ?>
-                <div>
-                <input type="checkbox" class="form-check-input" value="<?php echo $row['tag_id']?>" name="tags[<?php echo $counter?>][]">
+                <div class=" border border-green-500 mb-5 rounded-xl pl-3 pr-4 h-7">
+                <input type="checkbox" class="" value="<?php echo $row['tag_id']?>" name="tags[<?php echo $counter?>][]">
                 <label for="checkbox"><?php echo $row['tag_name']?></label>
                 </div>
                 <?php
@@ -127,16 +128,36 @@ $counter = 0;
         </div>
         </div>
 
-        <?php echo $counter ?>
 
         <input type="hidden" value="0" name="counter" id="counter">
 
-        <button type="submit" name="submit" class="fixed-bottom" id="submitAll">Submit</button>
-        
+        <div class="max-w-3xl mx-auto pl-56 mt-12">
+  <button type="submit" name="submit" class=" fixed bottom-64 right-0 mb-5  w-28 h-10 rounded-xl hover:bg-white hover:text-green-600 border border-green-700 bg-green-500 text-white duration-300 ease-in-out" id="submitAll">Submit all</button>
+  <?php
+  if(isset($_GET['LF_error'])){
+    echo '<div><p class="text-red-400 mb-3">'.$_GET['LF_error'].'</p></div>';
+  }
+  if(isset($_GET['WF_error'])){
+    echo '<div><p class="text-red-400 mb-3">'.$_GET['WF_error'].'</p></div>';
+  }
+  if(isset($_GET['error'])){
+    echo '<div><p class="text-red-400 mb-3">'.$_GET['error'].'</p></div>';
+  }
+  if(isset($_GET['Empty_error'])){
+    echo '<div><p class="text-red-400 mb-3">'.$_GET['Empty_error'].'</p></div>';
+  }
+  ?>
+
+</div>
     </form>
     
-  </div>
-  <button id="addmore" class="text-center" onclick="add()">Add more</button>
+ 
+  
+ 
+  <button id="addmore" class=" ml-48 mb-10 mx-auto w-96 h-10 rounded-xl hover:text-green-600 border border-green-700 bg-green-500 text-white hover:bg-white duration-300 ease-in-out" onclick="add()">Add more</button>
+
+ </div>
+
 
 
 

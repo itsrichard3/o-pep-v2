@@ -59,7 +59,8 @@ if (!empty($_POST['article_title']) && !empty($_POST['article_text']) && !empty(
         if($img_size[$i] > 10000000){
     
           $largeFileErr = 'File is too large, Must be less than 10MB';
-          header('location: ../../ADD_ARTICLE.php?theme='.$theme.'&error='.$largeFileErr);    
+          header('location: ../../ADD_ARTICLE.php?theme='.$theme.'&LF_error='.$largeFileErr); 
+          die();    
     
         }else{
           //checking file type
@@ -96,16 +97,19 @@ if (!empty($_POST['article_title']) && !empty($_POST['article_text']) && !empty(
 
           }else{
             $WrongFileErr = "Can't uplaod files of this type!";
-            header('location: ../../ADD_ARTICLE.php?theme='.$theme.'&error='.$WrongFileErr);      
+            header('location: ../../ADD_ARTICLE.php?theme='.$theme.'&WF_error='.$WrongFileErr);     
+            die(); 
           }
         } 
       }else{
         $fileErr = "Uknown Error";
-        header('location: ../../ADD_ARTICLE.php?theme='.$theme.'&error='.$fileErr);      
+        header('location: ../../ADD_ARTICLE.php?theme='.$theme.'&error='.$fileErr);
+        die();       
       }
     }else{
       $emptyInputErr = "Please fill out all the empty fields before submitting";
-      header('location: ../../ADD_ARTICLE.php?theme='.$theme.'&error='.$emptyInputErr);  
+      header('location: ../../ADD_ARTICLE.php?theme='.$theme.'&Empty_error='.$emptyInputErr);  
+      die(); 
     }
   }
 
@@ -117,7 +121,8 @@ if (!empty($_POST['article_title']) && !empty($_POST['article_text']) && !empty(
   if(!empty($_POST['theme'])){
     $theme = $_POST['theme'];
     $emptyInputErr = "Please fill out all the empty fields before submitting";
-    header('location: ../../ADD_ARTICLE.php?theme='.$theme.'&error='.$emptyInputErr);
+    header('location: ../../ADD_ARTICLE.php?theme='.$theme.'&Empty_error='.$emptyInputErr);
+    die(); 
   }
 }
 
