@@ -163,7 +163,7 @@ $idtheme = $themeID_row['theme_ID'];
 
         <div>
             <div class="w-25">
-                <img src="./assets/imgs/<?php echo $row['article_img']?>" alt="">
+                <img src="./assets/imgs/uploads/<?php echo $row['article_img'] ?>" alt="">
             </div>
             <div>
                 <p><?php echo $row['article_text']?></p>
